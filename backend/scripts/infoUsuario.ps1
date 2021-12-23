@@ -1,8 +1,9 @@
 param (
     [string]$usuario,
     [string]$server,
-    [string]$ouSearch
-
+    [string]$ouSearch,
+    [string]$user,
+    [string]$pass
 )
 $mensajeError = [PSCustomObject]@{
                 codigo = '1'
@@ -10,7 +11,10 @@ $mensajeError = [PSCustomObject]@{
             }
 
 try {
-    $infoUser_aux = Get-ADUser -Server $server -SearchBase $ouSearch -Filter 'sAMAccountName -like $usuario'  -Properties * | 
+    $secpasswd = ConvertTo-SecureString "$pass" -AsPlainText -Force
+    $creds = New-Object System.Management.Automation.PSCredential ($user, $secpasswd)
+    
+    $infoUser_aux = Get-ADUser -Server $server -Credential $creds -SearchBase $ouSearch -Filter 'sAMAccountName -like $usuario'  -Properties * | 
                     Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired 
     
     if ( $infoUser_aux ) {
