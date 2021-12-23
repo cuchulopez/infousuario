@@ -1,19 +1,25 @@
 param (
-    [string]$usuario
+    [string]$usuario,
+    [string]$server,
+    [string]$ouSearch
+
 )
 $mensajeError = [PSCustomObject]@{
-                codigo= '0'
-                mensaje= 'No existe'
+                codigo = '1'
+                mensaje = 'Usuario no encontrado.'
             }
 
 try {
-    $infoUser = Get-ADUser -Identity $usuario -Properties * | 
+    $infoUser_aux = Get-ADUser -Server $server -SearchBase $ouSearch -Filter 'sAMAccountName -like $usuario'  -Properties * | 
                     Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired 
     
-    return $infoUser | ConvertTo-Json
-                    
+    if ( $infoUser_aux ) {
+        $infoUser = $infoUser_aux
+    } else {
+        $infoUser = $mensajeError
+    }
 }
 catch {
-    return ( $mensajeError | ConvertTo-Json )
-    
+    $infoUser = $mensajeError
 }
+return $infoUser | ConvertTo-Json
