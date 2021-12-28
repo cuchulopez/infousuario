@@ -2,11 +2,6 @@ var express = require('express');
 var router = express.Router();
 const { PowerShell } = require('node-powershell');
 
-let userError = {
-  codigo : '1',
-  mensaje : 'Usuario no encontrado.'
-}
-
 router.get('/infoUsuario/:usuario', async function(req, res, next) {
     const usuario = req.params.usuario;
     const server = process.env.DC_SERVER;
