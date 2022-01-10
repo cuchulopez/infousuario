@@ -6,7 +6,8 @@ param (
     [string]$pass
 )
 $mensajeError = [PSCustomObject]@{
-                codigo = '1'
+                codigo = 1
+                ObjectClass = 'Not found'
                 mensaje = 'Usuario no encontrado.'
             }
 $OUs = $ouSearch.Split(';')
