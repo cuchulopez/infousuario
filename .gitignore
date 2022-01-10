@@ -1,4 +1,6 @@
 /backend/node_modules
+/backend/bin/daemon/
+/backend/daemon/
 /backend/.env
 
 /frontend/node_modules
