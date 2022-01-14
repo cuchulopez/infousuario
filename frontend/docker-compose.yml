@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   web:
-    image: infoUsuario_app:1.0
+    image: infousuario_app:1.0
     build: .
     container_name: infoUsuario_app
     restart: unless-stopped
@@ -9,7 +9,6 @@ services:
       - "1090:80"
     networks:
       - infoUsuario_app-network
-
 networks:
   infoUsuario_app-network:
     driver: bridge  
