@@ -11,4 +11,5 @@ services:
       - infoUsuario_app-network
 networks:
   infoUsuario_app-network:
-    driver: bridge  
+    driver: bridge
+    
