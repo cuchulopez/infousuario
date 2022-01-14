@@ -1,6 +1,7 @@
 version: '3.7'
 services:
   web:
+    image: infoUsuario_app:1.0
     build: .
     container_name: infoUsuario_app
     restart: unless-stopped
