@@ -14,6 +14,10 @@ export const InfoUser = ({ infoUsuario }) => {
                                 { infoUsuario.Enabled ? <td>Habilitado </td> : <td>Deshabilitado</td>} 
                             </tr>
                             <tr>
+                                <th scope='row'>Nombre completo:</th>
+                                <td>{ infoUsuario.CN } </td>
+                            </tr>
+                            <tr>
                                 <th scope='row'>Ubicación:</th>
                                 <td>{ infoUsuario.CanonicalName } </td>
                             </tr>
