@@ -35,10 +35,7 @@ try {
 
     $session = New-PSSession -Credential $creds -Name Exchange -ConfigurationName Microsoft.Exchange -ConnectionUri $exchange
     $cmdletExch = Import-PSSession -Session $session -CommandName Get-MailboxStatistics -DisableNameChecking
-    $cmdletAD = Import-module activedirectory -cmdlet Get-ADUser
-
-    # Write-Output $cmdletExch
-    Write-Output $cmdletAD
+    $cmdletAD = Import-Module activedirectory -cmdlet Get-ADUser
 
     $infoUser_aux = Foreach($OU in $OUs){
         Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter 'sAMAccountName -like $usuario'  -Properties * | 
@@ -63,10 +60,10 @@ try {
             Title = $infoUser_aux.Title
             PasswordLastSet = $infoUser_aux.PasswordLastSet
             PasswordExpired = $infoUser_aux.PasswordExpired
-            TotalMailboxSize = $userMailboxStats.TotalItemSize.Value.ToString()
+            TotalMailboxSize = $userMailboxStats.TotalItemSize
             MailboxDatabaseName = $userMailboxStats.DatabaseName
             MailboxServerName = $userMailboxStats.ServerName
-            MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()
+            # MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()
         }
         
     } else {
