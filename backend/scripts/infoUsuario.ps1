@@ -34,7 +34,11 @@ try {
     $creds = New-Object System.Management.Automation.PSCredential ($user, $secpasswd)
 
     $session = New-PSSession -Credential $creds -Name Exchange -ConfigurationName Microsoft.Exchange -ConnectionUri $exchange
-    $si = Import-PSSession -Session $session -CommandName Get-MailboxStatistics -DisableNameChecking
+    $cmdletExch = Import-PSSession -Session $session -CommandName Get-MailboxStatistics -DisableNameChecking
+    $cmdletAD = Import-module activedirectory -cmdlet Get-ADUser
+
+    # Write-Output $cmdletExch
+    Write-Output $cmdletAD
 
     $infoUser_aux = Foreach($OU in $OUs){
         Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter 'sAMAccountName -like $usuario'  -Properties * | 
