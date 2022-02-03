@@ -39,7 +39,7 @@ try {
 
     $infoUser_aux = Foreach($OU in $OUs){
         Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter 'sAMAccountName -like $usuario'  -Properties * | 
-        Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired
+        Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired, SamAccountName 
     }
     
     # $infoUser_aux = Get-ADUser -Server $server -Credential $creds -SearchBase $ouSearch -Filter 'sAMAccountName -like $usuario'  -Properties * | 
@@ -51,6 +51,7 @@ try {
         $infoUser = New-Object -TypeName PSObject -Property @{
             Enabled = $infoUser_aux.Enabled
             ObjectClass = $infoUser_aux.ObjectClass
+            AccountName = $infoUser_aux.SamAccountName
             CN = $infoUser_aux.CN
             CanonicalName = $infoUser_aux.CanonicalName
             Description = $infoUser_aux.Description
