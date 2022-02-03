@@ -14,6 +14,14 @@ export const InfoUser = ({ infoUsuario }) => {
                                 { infoUsuario.Enabled ? <td>Habilitado </td> : <td>Deshabilitado</td>} 
                             </tr>
                             <tr>
+                                <th scope ='row'>Estado de constraseña:</th>
+                                { infoUsuario.PasswordExpired ? <td>Expirada</td> : <td>Ok</td> } 
+                            </tr>
+                            <tr>
+                                <th scope='row'>Último cambio de constraseña:</th>
+                                <td>{ infoUsuario.PasswordLastSet }</td>
+                            </tr>
+                            <tr>
                                 <th scope='row'>Nombre completo:</th>
                                 <td>{ infoUsuario.CN } </td>
                             </tr>
@@ -34,20 +42,24 @@ export const InfoUser = ({ infoUsuario }) => {
                                 <td>{ infoUsuario.EmployeeID }</td>
                             </tr>
                             <tr>
-                                <th scope='row'>Email:</th>
-                                <td>{ infoUsuario.EmailAddress }</td>
-                            </tr>
-                            <tr>
                                 <th scope='row'>Puesto:</th>
                                 <td>{ infoUsuario.Title }</td>
                             </tr>
                             <tr>
-                                <th scope='row'>Último cambio de constraseña:</th>
-                                <td>{ infoUsuario.PasswordLastSet }</td>
+                                <th scope='row'>Email:</th>
+                                <td>{ infoUsuario.EmailAddress }</td>
                             </tr>
                             <tr>
-                                <th scope ='row'>Estado de constraseña:</th>
-                                { infoUsuario.PasswordExpired ? <td>Expirada</td> : <td>Ok</td> } 
+                                <th scope='row'>Cuota de correo usada:</th>
+                                <td>{ infoUsuario.TotalMailboxSize }</td>
+                            </tr>
+                            <tr>
+                                <th scope='row'>Base de datos de correo:</th>
+                                <td>{ infoUsuario.MailboxDatabaseName }</td>
+                            </tr>
+                            <tr>
+                                <th scope='row'>Servidor de correo:</th>
+                                <td>{ infoUsuario.MailboxServerName }</td>
                             </tr>
                         </tbody>
                     </table>

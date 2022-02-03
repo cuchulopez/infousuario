@@ -22,6 +22,7 @@ param (
 #     return $userMailboxStats
 # }
 
+[Int32]$DNI = $null
 $mensajeError = [PSCustomObject]@{
                 codigo = 1
                 ObjectClass = 'Not found'
@@ -35,25 +36,29 @@ try {
 
     $session = New-PSSession -Credential $creds -Name Exchange -ConfigurationName Microsoft.Exchange -ConnectionUri $exchange
     $cmdletExch = Import-PSSession -Session $session -CommandName Get-MailboxStatistics -DisableNameChecking
-    $cmdletAD = Import-module activedirectory -cmdlet Get-ADUser
+    $cmdletAD = Import-Module activedirectory -cmdlet Get-ADUser
 
-    # Write-Output $cmdletExch
-    Write-Output $cmdletAD
+    if ([Int32]::TryParse($usuario,[ref]$DNI)){
+        $filtro = 'employeeID -like $DNI'
+    } else {
+        $filtro = 'sAMAccountName -like $usuario'
+    }
 
     $infoUser_aux = Foreach($OU in $OUs){
-        Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter 'sAMAccountName -like $usuario'  -Properties * | 
-        Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired
+        Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter $filtro -Properties * | 
+        Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired, SamAccountName 
     }
     
     # $infoUser_aux = Get-ADUser -Server $server -Credential $creds -SearchBase $ouSearch -Filter 'sAMAccountName -like $usuario'  -Properties * | 
     #                 Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired
     
     if ( $infoUser_aux ) {
-        $userMailboxStats = Get-MailboxStatistics -identity $usuario | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
+        $userMailboxStats = Get-MailboxStatistics -identity $infoUser_aux.SamAccountName | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
 
         $infoUser = New-Object -TypeName PSObject -Property @{
             Enabled = $infoUser_aux.Enabled
             ObjectClass = $infoUser_aux.ObjectClass
+            AccountName = $infoUser_aux.SamAccountName
             CN = $infoUser_aux.CN
             CanonicalName = $infoUser_aux.CanonicalName
             Description = $infoUser_aux.Description
@@ -63,10 +68,10 @@ try {
             Title = $infoUser_aux.Title
             PasswordLastSet = $infoUser_aux.PasswordLastSet
             PasswordExpired = $infoUser_aux.PasswordExpired
-            TotalMailboxSize = $userMailboxStats.TotalItemSize.Value.ToString()
+            TotalMailboxSize = $userMailboxStats.TotalItemSize
             MailboxDatabaseName = $userMailboxStats.DatabaseName
             MailboxServerName = $userMailboxStats.ServerName
-            MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()
+            # MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()
         }
         
     } else {
