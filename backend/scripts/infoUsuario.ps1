@@ -23,11 +23,17 @@ param (
 # }
 
 [Int32]$DNI = $null
-$mensajeError = [PSCustomObject]@{
-                codigo = 1
-                ObjectClass = 'Not found'
-                mensaje = 'Usuario no encontrado.'
-            }
+$Mensajes = @([PSCustomObject]@{
+                    Code = 1
+                    ObjectClass = 'Not found'
+                    Message = 'Usuario no encontrado.'
+                },
+                [PSCustomObject]@{
+                    Code = 2
+                    ObjectClass = 'Not found'
+                    Message = 'DNI no encontrado.'
+                }
+            )
 $OUs = $ouSearch.Split(';')
 
 try {
@@ -39,16 +45,19 @@ try {
     $cmdletAD = Import-Module activedirectory -cmdlet Get-ADUser
 
     if ([Int32]::TryParse($usuario,[ref]$DNI)){
-        $filtro = 'employeeID -like $DNI'
+        $tipoDato = "employeeID"
+        $mensajeError = $Mensajes[1]
+        # $filtro = 'employeeID -like $DNI'
     } else {
-        $filtro = 'sAMAccountName -like $usuario'
+        $tipoDato = "sAMAccountName"
+        $mensajeError = $Mensajes[0]
     }
+    $filtro = '$tipoDato -like $usuario'
 
     $infoUser_aux = Foreach($OU in $OUs){
         Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter $filtro -Properties * | 
         Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired, SamAccountName 
     }
-    
     # $infoUser_aux = Get-ADUser -Server $server -Credential $creds -SearchBase $ouSearch -Filter 'sAMAccountName -like $usuario'  -Properties * | 
     #                 Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired
     
@@ -56,6 +65,7 @@ try {
         $userMailboxStats = Get-MailboxStatistics -identity $infoUser_aux.SamAccountName | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
 
         $infoUser = New-Object -TypeName PSObject -Property @{
+            Code = 0
             Enabled = $infoUser_aux.Enabled
             ObjectClass = $infoUser_aux.ObjectClass
             AccountName = $infoUser_aux.SamAccountName
@@ -71,9 +81,9 @@ try {
             TotalMailboxSize = $userMailboxStats.TotalItemSize
             MailboxDatabaseName = $userMailboxStats.DatabaseName
             MailboxServerName = $userMailboxStats.ServerName
+            TipoDato = $tipoDato
             # MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()
         }
-        
     } else {
         $infoUser = $mensajeError
     }

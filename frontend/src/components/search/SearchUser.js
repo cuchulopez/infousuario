@@ -23,14 +23,14 @@ const SearchUser = ({ usuario }) => {
                 ) 
             }
 
-            {
+            {/* {
                 !cargando && <h4>Usuario: { infoUser.AccountName }</h4>
-            }
+            } */}
 
-            { infoUser.codigo === 1 && <span> {infoUser.mensaje} </span> }
+            { infoUser.Code !== 0 && <span> {infoUser.Message} </span> }
             
             {
-                ( !cargando && infoUser.codigo !== 1 ) && 
+                ( !cargando && infoUser.Code === 0 ) && 
                              <InfoUser infoUsuario = { infoUser } />
             }
         </div>
