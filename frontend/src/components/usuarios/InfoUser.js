@@ -6,7 +6,7 @@ export const InfoUser = ({ infoUsuario }) => {
 
     return ( 
                 <div className='infouser'>
-                
+                    <h4>Usuario: { infoUsuario.AccountName }</h4>
                     <table className='table'>
                         <tbody>
                             <tr>

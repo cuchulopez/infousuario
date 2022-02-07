@@ -5,3 +5,7 @@ ul {
 li {
     list-style-type:none
 }
+
+th, td {
+    font-size: .8rem;
+}

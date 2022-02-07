@@ -33,7 +33,7 @@ export const User = ({ setUsuario }) => {
                                 name = "userSearch"
                                 // onClick = { handleCleanup }
                                 onChange = { handleInputChange }
-                                placeholder='Ingrese un usuario.'
+                                placeholder='Ingrese un usuario o DNI.'
                                 type="text" 
                                 value = { user }
                             />
