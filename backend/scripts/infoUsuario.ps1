@@ -82,7 +82,7 @@ try {
             MailboxDatabaseName = $userMailboxStats.DatabaseName
             MailboxServerName = $userMailboxStats.ServerName
             TipoDato = $tipoDato
-            # MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()
+            # MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()     # Propiedad de Exchange 2016
         }
     } else {
         $infoUser = $mensajeError
