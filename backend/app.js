@@ -1,21 +1,27 @@
-var createError = require('http-errors');
+// var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var rfs = require('rotating-file-stream');
 
 var cors = require('cors');
 var apiRouter = require('./routes/api');
 
 var app = express();
-require('dotenv').config();
 
-
+var accessLog = rfs.createStream('access.log', {
+    interval: '1d', // rotate daily
+    path: path.join(__dirname, 'logs')
+  });
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'hbs');
 
+require('dotenv').config();
 app.use(logger('dev'));
+app.use(logger('combined', { stream: accessLog }))
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
