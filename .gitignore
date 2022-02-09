@@ -1,10 +1,7 @@
 /backend/node_modules
 /backend/bin/daemon/
 /backend/daemon/
-<<<<<<< HEAD
-=======
 /backend/logs
->>>>>>> 76bf96f25a1fff5cf4fb06c0bbaa60dfc91180b1
 /backend/.env
 
 
