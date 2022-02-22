@@ -1,5 +1,5 @@
 param (
-    [string]$usuario,
+    [string]$userAD,
     [string]$server,
     [array]$ouSearch,
     [string]$user,
@@ -23,7 +23,7 @@ param (
 # }
 
 [Int32]$DNI = $null
-$Mensajes = @([PSCustomObject]@{
+$messages = @([PSCustomObject]@{
                     Code = 1
                     ObjectClass = 'Not found'
                     Message = 'Usuario no encontrado.'
@@ -35,6 +35,7 @@ $Mensajes = @([PSCustomObject]@{
                 }
             )
 $OUs = $ouSearch.Split(';')
+$infoUser = @()
 
 try {
     $secpasswd = ConvertTo-SecureString "$pass" -AsPlainText -Force
@@ -42,54 +43,76 @@ try {
 
     $session = New-PSSession -Credential $creds -Name Exchange -ConfigurationName Microsoft.Exchange -ConnectionUri $exchange
     $cmdletExch = Import-PSSession -Session $session -CommandName Get-MailboxStatistics -DisableNameChecking
-    $cmdletAD = Import-Module activedirectory -cmdlet Get-ADUser
+    $cmdletAD = Import-Module ActiveDirectory -cmdlet Get-ADUser
 
-    if ([Int32]::TryParse($usuario,[ref]$DNI)){
-        $tipoDato = "employeeID"
-        $mensajeError = $Mensajes[1]
+    if ([Int32]::TryParse($userAD,[ref]$DNI)){
+        $dataType = "employeeID"
+        $messageError = $messages[1]
         # $filtro = 'employeeID -like $DNI'
     } else {
-        $tipoDato = "sAMAccountName"
-        $mensajeError = $Mensajes[0]
+        $dataType = "sAMAccountName"
+        $messageError = $messages[0]
     }
-    $filtro = '$tipoDato -like $usuario'
+    $filter_aux = "$dataType -like '*$userAD*'"
 
     $infoUser_aux = Foreach($OU in $OUs){
-        Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter $filtro -Properties * | 
+        Get-ADUser -Server $server -Credential $creds -SearchBase $OU -Filter $filter_aux -Properties * | 
         Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired, SamAccountName 
     }
     # $infoUser_aux = Get-ADUser -Server $server -Credential $creds -SearchBase $ouSearch -Filter 'sAMAccountName -like $usuario'  -Properties * | 
     #                 Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired
     
     if ( $infoUser_aux ) {
-        $userMailboxStats = Get-MailboxStatistics -identity $infoUser_aux.SamAccountName | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
+        $infoUser += ForEach ( $iUser in $infoUser_aux){
+            $userMailboxStats = Get-MailboxStatistics -identity $iUser.SamAccountName | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
 
-        $infoUser = New-Object -TypeName PSObject -Property @{
-            Code = 0
-            Enabled = $infoUser_aux.Enabled
-            ObjectClass = $infoUser_aux.ObjectClass
-            AccountName = $infoUser_aux.SamAccountName
-            CN = $infoUser_aux.CN
-            CanonicalName = $infoUser_aux.CanonicalName
-            Description = $infoUser_aux.Description
-            Department = $infoUser_aux.Department
-            EmployeeID = $infoUser_aux.EmployeeID
-            EmailAddress = $infoUser_aux.EmailAddress
-            Title = $infoUser_aux.Title
-            PasswordLastSet = $infoUser_aux.PasswordLastSet
-            PasswordExpired = $infoUser_aux.PasswordExpired
-            TotalMailboxSize = $userMailboxStats.TotalItemSize
-            MailboxDatabaseName = $userMailboxStats.DatabaseName
-            MailboxServerName = $userMailboxStats.ServerName
-            TipoDato = $tipoDato
+            New-Object -TypeName PSObject -Property @{
+                Code = 0
+                Enabled = $iUser.Enabled
+                ObjectClass = $iUser.ObjectClass
+                AccountName = $iUser.SamAccountName
+                CN = $iUser.CN
+                CanonicalName = $iUser.CanonicalName
+                Description = $iUser.Description
+                Department = $iUser.Department
+                EmployeeID = $iUser.EmployeeID
+                EmailAddress = $iUser.EmailAddress
+                Title = $iUser.Title
+                PasswordLastSet = $iUser.PasswordLastSet
+                PasswordExpired = $iUser.PasswordExpired
+                TotalMailboxSize = $userMailboxStats.TotalItemSize
+                MailboxDatabaseName = $userMailboxStats.DatabaseName
+                MailboxServerName = $userMailboxStats.ServerName
+                DataType = $dataType
+            }
+        # $userMailboxStats = Get-MailboxStatistics -identity $infoUser_aux.SamAccountName | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
+
+        # $infoUser = New-Object -TypeName PSObject -Property @{
+        #     Code = 0
+        #     Enabled = $infoUser_aux.Enabled
+        #     ObjectClass = $infoUser_aux.ObjectClass
+        #     AccountName = $infoUser_aux.SamAccountName
+        #     CN = $infoUser_aux.CN
+        #     CanonicalName = $infoUser_aux.CanonicalName
+        #     Description = $infoUser_aux.Description
+        #     Department = $infoUser_aux.Department
+        #     EmployeeID = $infoUser_aux.EmployeeID
+        #     EmailAddress = $infoUser_aux.EmailAddress
+        #     Title = $infoUser_aux.Title
+        #     PasswordLastSet = $infoUser_aux.PasswordLastSet
+        #     PasswordExpired = $infoUser_aux.PasswordExpired
+        #     TotalMailboxSize = $userMailboxStats.TotalItemSize
+        #     MailboxDatabaseName = $userMailboxStats.DatabaseName
+        #     MailboxServerName = $userMailboxStats.ServerName
+        #     TipoDato = $tipoDato
             # MailboxMaxSize = $userMailboxStats.DatabaseProhibitSendQuota.Value.ToString()     # Propiedad de Exchange 2016
         }
     } else {
-        $infoUser = $mensajeError
+        $infoUser = $messageError
     }
 }
 catch {
-    $infoUser = $mensajeError
+    $infoUser = $messageError
 }
 Remove-PSSession -Session $session
 return $infoUser | ConvertTo-Json
