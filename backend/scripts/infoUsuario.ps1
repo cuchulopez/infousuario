@@ -35,7 +35,7 @@ $messages = @([PSCustomObject]@{
                 }
             )
 $OUs = $ouSearch.Split(';')
-$infoUser = @()
+[array]$infoUser = @()
 
 try {
     $secpasswd = ConvertTo-SecureString "$pass" -AsPlainText -Force
@@ -63,7 +63,7 @@ try {
     #                 Select-Object Enabled,ObjectClass,CN,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={Get-Date ($_.'PasswordLastSet') -Format 'dd/MM/yyyy HH:mm'}},PasswordExpired
     
     if ( $infoUser_aux ) {
-        $infoUser += ForEach ( $iUser in $infoUser_aux){
+        [array]$infoUser += ForEach ( $iUser in $infoUser_aux){
             $userMailboxStats = Get-MailboxStatistics -identity $iUser.SamAccountName | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
 
             New-Object -TypeName PSObject -Property @{
@@ -115,4 +115,5 @@ catch {
     $infoUser = $messageError
 }
 Remove-PSSession -Session $session
-return $infoUser | ConvertTo-Json
+
+return ,$infoUser | ConvertTo-Json

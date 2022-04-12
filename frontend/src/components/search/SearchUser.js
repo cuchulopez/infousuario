@@ -1,17 +1,15 @@
 // import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 
-import { InfoUser } from '../usuarios/InfoUser';
-// import { getUser } from '../../functions/getUser';
+import { useInfoUsuario } from '../../hooks/useInfoUsuario';
+import { InfoUserList } from '../usuarios/InfoUserList';
 
 import '../../styles/searchUser.css';
-import { useInfoUsuario } from '../../hooks/useInfoUsuario';
 
 const SearchUser = ({ usuario }) => {
     
-    const { cargando , datos } = useInfoUsuario( usuario );
-    const infoUser = !!datos && datos; // condicional para q no tire error por null al cargar el componente
-
+    const [ cargando , datos ] = useInfoUsuario( usuario );
+    const infoUser = !!datos && datos; // condicional para q no tire error por null al cargar el componente, !!null = false
     return (
         <div className="usuario">
             
@@ -23,15 +21,17 @@ const SearchUser = ({ usuario }) => {
                 ) 
             }
 
-            {/* {
-                !cargando && <h4>Usuario: { infoUser.AccountName }</h4>
-            } */}
-
-            { infoUser.Code !== 0 && <span> {infoUser.Message} </span> }
+            {
+                infoUser !== false && (
+                    infoUser[0].Code !== 0 && <span> { infoUser[0].Message } </span> 
+                )
+            }
             
             {
-                ( !cargando && infoUser.Code === 0 ) && 
-                             <InfoUser infoUsuario = { infoUser } />
+                ( !cargando && infoUser !== false) && (
+                    infoUser[0].Code === 0  && 
+                             <InfoUserList infoUsuario = { infoUser } />
+                    )
             }
         </div>
     )
