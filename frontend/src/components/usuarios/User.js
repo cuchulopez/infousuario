@@ -1,46 +1,53 @@
-import React, {useState} from 'react';
+import React from 'react';
+import { useForm } from "react-hook-form";
 import PropTypes from 'prop-types';
 
-import '../../styles/user.css'
 import { ShowButton } from './ShowButton';
+
+import '../../styles/user.css'
 
 export const User = ({ setUsuario }) => {
 
-    
-    const [user, setUser] = useState('');
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
-    // const handleCleanup = () => {
-    //     setUser('');
-    // };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setUsuario( user );
+    const registerOptions = {
+        required: "Ingrese usuario o DNI.",
+        minLength: {
+            value: 5,
+            message: "Ingrese al menos 5 caracteres."
+        },
+        maxLength: {
+            value: 15,
+            message: "Máximo 15 caracteres."
+        },
+        pattern: {
+            message: "Sólo letras o números."
+        }
     };
 
-    const handleInputChange = ( {target} ) =>  {
-        setUser(target.value);
+    const onSubmit = ( { usersearch } ) => {
+        setUsuario( usersearch );
     };
 
     return (
         <div className="infoUsuario">
             <h3>Información de usuario MAGyP</h3>
-            <div className="col-8">
-                <form className="row" onSubmit= {handleSubmit}>
+            <div className="col-8 mt-4">
+                <form className="row" onSubmit = { handleSubmit(onSubmit) }>
                     <div className="col-4">
                         <input 
                             autoComplete= "off"
                             className="form-control"
-                            name = "userSearch"
-                            // onClick = { handleCleanup }
-                            onChange = { handleInputChange }
+                            name = "usersearch"
                             placeholder='Ingrese un usuario o DNI.'
                             type="text" 
-                            value = { user }
+                            {...register("usersearch", registerOptions)}
                         />
                     </div>
                     <ShowButton />
+                    
                 </form>
+                {errors?.usersearch && <p className="col-4 alert alert-danger mt-4">{errors.usersearch.message}</p> }
             </div>
         </div>
     )

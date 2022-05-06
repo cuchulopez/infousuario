@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { getUser } from '../functions/getUser';
 
-export const useInfoUsuario = ( usuario ) => {
+export const useInfoUsuario = ( usuario = '') => {
+    // console.log('Me ejecuté. useInfoUsuario');
+
     const initialState = {datos: [], cargando: true};
     const [infoUsuario, setInfoUsuario] = useState( initialState );
 
@@ -10,15 +12,17 @@ export const useInfoUsuario = ( usuario ) => {
         setInfoUsuario({ datos: [],cargando: true });
 
         if (usuario !== ''){
+
             getUser( usuario )
-                .then( datos => {
-                    setInfoUsuario({
-                        cargando: false,
-                        datos
-                    })
-                });
-            }
-        }, [usuario]);
+            .then( datos => {
+                setInfoUsuario({
+                    cargando: false,
+                    datos
+                })
+            });
+        }
+    }, [usuario]);
+    
     return [ infoUsuario.cargando, infoUsuario.datos.value];
 
 }

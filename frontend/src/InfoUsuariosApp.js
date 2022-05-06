@@ -6,6 +6,7 @@ import SearchUser from './components/search/SearchUser';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function InfoUsuariosApp({defaultUsuario = ''}) {
+
   const [usuario, setUsuario] = useState(defaultUsuario);
   
   return (
