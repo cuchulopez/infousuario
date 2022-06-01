@@ -6,7 +6,7 @@ import { InfoUserList } from '../usuarios/InfoUserList';
 
 import '../../styles/searchUser.css';
 
-const SearchUser = ({ usuario = '' }) => {
+const SearchUser = ({usuario = '' }) => {
     // console.log('Me ejecuté. SearchUser');
 
     const [ cargando , datos ] = useInfoUsuario( usuario );
@@ -23,13 +23,13 @@ const SearchUser = ({ usuario = '' }) => {
             }
 
             {
-                infoUser !== false && (
+                infoUser && (
                     infoUser[0].Code !== 0 && <span className='m-2'> { infoUser[0].Message } </span> 
                 )
             }
             
             {
-                ( !cargando && infoUser !== false) && (
+                ( !cargando && infoUser ) && (
                     infoUser[0].Code === 0  && 
                              <InfoUserList infoUsuario = { infoUser } />
                     )

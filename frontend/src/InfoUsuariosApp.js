@@ -7,7 +7,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function InfoUsuariosApp({defaultUsuario = ''}) {
 
-  const [usuario, setUsuario] = useState(defaultUsuario);
+  const initialUser = {
+    user: '',
+    error: true
+  }
+  const [usuario, setUsuario] = useState('');
   
   return (
     <>

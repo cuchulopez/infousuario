@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { InfoUsuarioRouter } from './routers/InfoUsuarioRouter';
+
 import './styles/index.css';
-import InfoUsuariosApp from './InfoUsuariosApp';
 
 ReactDOM.render(
-    <InfoUsuariosApp />
+    <InfoUsuarioRouter />
     ,  document.getElementById('principal')
 );

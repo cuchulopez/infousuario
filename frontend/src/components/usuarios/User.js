@@ -1,53 +1,57 @@
-import React from 'react';
-import { useForm } from "react-hook-form";
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import queryString from 'query-string';
 import PropTypes from 'prop-types';
 
 import { ShowButton } from './ShowButton';
+import { useCustomForm } from '../../hooks/useCustomForm';
 
 import '../../styles/user.css'
 
 export const User = ({ setUsuario }) => {
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { q = '' } = queryString.parse(location.search);
+ 
+    const [ formValues, errorValidate, handleInputChange ] = useCustomForm({
+        userSearch: q,
+    });
+    
+    const [isSubmit, setisSubmit] = useState(false);
+    const { userSearch } = formValues;
 
-    const registerOptions = {
-        required: "Ingrese usuario o DNI.",
-        minLength: {
-            value: 5,
-            message: "Ingrese al menos 5 caracteres."
-        },
-        maxLength: {
-            value: 15,
-            message: "Máximo 15 caracteres."
-        },
-        pattern: {
-            message: "Sólo letras o números."
+    const handleOnSubmit = ( e ) => {
+        e.preventDefault();
+        setisSubmit(true);
+        if ( errorValidate ){
+            setUsuario( userSearch );
+            navigate(`?q=${ userSearch }`);
         }
+        
     };
-
-    const onSubmit = ( { usersearch } ) => {
-        setUsuario( usersearch );
-    };
+    
 
     return (
         <div className="infoUsuario">
             <h3>Información de usuario MAGyP</h3>
             <div className="col-8 mt-4">
-                <form className="row" onSubmit = { handleSubmit(onSubmit) }>
+                <form className="row" onSubmit = { handleOnSubmit }>
                     <div className="col-4">
                         <input 
                             autoComplete= "off"
+                            autoFocus 
                             className="form-control"
-                            name = "usersearch"
+                            name = "userSearch"
+                            onChange = { handleInputChange }
                             placeholder='Ingrese un usuario o DNI.'
-                            type="text" 
-                            {...register("usersearch", registerOptions)}
+                            type="text"
+                            value = { userSearch }
                         />
                     </div>
                     <ShowButton />
-                    
+                    { (!errorValidate && isSubmit ) && <p className = "mensaje alert alert-danger" role="alert">El usuario debe tener letras o numeros, mínimo 5 y máximo 15 caracteres.</p> }
                 </form>
-                {errors?.usersearch && <p className="col-4 alert alert-danger mt-4">{errors.usersearch.message}</p> }
             </div>
         </div>
     )

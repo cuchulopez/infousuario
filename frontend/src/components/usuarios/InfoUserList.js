@@ -15,7 +15,7 @@ export const InfoUserList = ({ infoUsuario }) => {
                 {   
                     infoUsuario.map(( user, i ) => (
 
-                        <Accordion.Item key = { user.EmployeeID } eventKey =  { i }  >
+                        <Accordion.Item key = { i } eventKey =  { i }  >
                             <Accordion.Header>
                                 Usuario: { user.AccountName }
                             </Accordion.Header>
