@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import queryString from 'query-string';
 import PropTypes from 'prop-types';
 
 import { ShowButton } from './ShowButton';
@@ -9,29 +7,20 @@ import { useCustomForm } from '../../hooks/useCustomForm';
 import '../../styles/user.css'
 
 export const User = ({ setUsuario }) => {
-
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { q = '' } = queryString.parse(location.search);
- 
-    const [ formValues, errorValidate, handleInputChange ] = useCustomForm({
-        userSearch: q,
-    });
     
     const [isSubmit, setisSubmit] = useState(false);
+    const [ formValues, errorValidate, handleInputChange ] = useCustomForm();
+    
     const { userSearch } = formValues;
-
+    
     const handleOnSubmit = ( e ) => {
         e.preventDefault();
         setisSubmit(true);
         if ( errorValidate ){
             setUsuario( userSearch );
-            navigate(`?q=${ userSearch }`);
         }
-        
     };
     
-
     return (
         <div className="infoUsuario">
             <h3>Información de usuario MAGyP</h3>
@@ -46,7 +35,6 @@ export const User = ({ setUsuario }) => {
                             onChange = { handleInputChange }
                             placeholder='Ingrese un usuario o DNI.'
                             type="text"
-                            value = { userSearch }
                         />
                     </div>
                     <ShowButton />
