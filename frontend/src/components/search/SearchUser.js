@@ -12,7 +12,7 @@ const SearchUser = ({usuario = '' }) => {
     const [ cargando , datos ] = useInfoUsuario( usuario );
     const infoUser = !!datos && datos; // condicional para q no tire error por null al cargar el componente, !!null = false
     return (
-        <div className="usuario">
+        <div className="userList">
             
             {
                 (cargando && usuario !== '' ) && (

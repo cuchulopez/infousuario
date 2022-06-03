@@ -22,7 +22,7 @@ export const User = ({ setUsuario }) => {
     };
     
     return (
-        <div className="infoUsuario">
+        <div className="userSearch">
             <h3>Información de usuario MAGyP</h3>
             <div className="col-8 mt-4">
                 <form className="row" onSubmit = { handleOnSubmit }>
