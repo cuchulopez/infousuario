@@ -8,14 +8,15 @@ router.get('/infoUsuario/:usuario', async function(req, res, next) {
     const ouSearch = process.env.DC_OU_SEARCH;
     const user = process.env.AD_USR;
     const pass = process.env.AD_USR_PASS;
-    const exchange = process.env.EXCH_URL;
+    // const exchange = process.env.EXCH_URL;
 
     let ps = new PowerShell({
       executionPolicy: 'Bypass',
       noProfile: true
     });
 
-    const printCommand = PowerShell.command`. ./../scripts/infoUsuario.ps1 ${usuario} ${server} ${ouSearch} ${user} ${pass} ${exchange}`;
+    // const printCommand = PowerShell.command`. ./../scripts/infoUsuario.ps1 ${usuario} ${server} ${ouSearch} ${user} ${pass} ${exchange}`;
+    const printCommand = PowerShell.command`. ./../scripts/infoUsuario.ps1 ${usuario} ${server} ${ouSearch} ${user} ${pass}`;
     
     // console.log(printCommand);
     // const printCommand = PowerShell.command`Get-ADUser -Identity ${usuario} -Properties * | Select Enabled,ObjectClass,CanonicalName,Description,Department,EmployeeID,EmailAddress,Title,@{Name="PasswordLastSet";Expression={[datetime]::FromFileTime($_.'PasswordLastSet')}} | ConvertTo-Json`;

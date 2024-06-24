@@ -41,8 +41,8 @@ try {
     $secpasswd = ConvertTo-SecureString "$pass" -AsPlainText -Force
     $creds = New-Object System.Management.Automation.PSCredential ($user, $secpasswd)
 
-    $session = New-PSSession -Credential $creds -Name Exchange -ConfigurationName Microsoft.Exchange -ConnectionUri $exchange
-    $cmdletExch = Import-PSSession -Session $session -CommandName Get-MailboxStatistics -DisableNameChecking
+    # $session = New-PSSession -Credential $creds -Name Exchange -ConfigurationName Microsoft.Exchange -ConnectionUri $exchange
+    # $cmdletExch = Import-PSSession -Session $session -CommandName Get-MailboxStatistics -DisableNameChecking
     $cmdletAD = Import-Module ActiveDirectory -cmdlet Get-ADUser
 
     if ([Int32]::TryParse($userAD,[ref]$DNI)){
@@ -65,13 +65,13 @@ try {
     if ( $infoUser_aux ) {
 
         [array]$infoUser += ForEach ( $iUser in $infoUser_aux){
-            try {
-                $userMailboxStats = Get-MailboxStatistics -identity $iUser.SamAccountName -ErrorAction SilentlyContinue | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
-            } catch {
-                $userMailboxStats.TotalItemSize = $null
-                $userMailboxStats.DatabaseName = $null
-                $userMailboxStats.ServerName = $null
-            }
+            # try {
+            #     $userMailboxStats = Get-MailboxStatistics -identity $iUser.SamAccountName -ErrorAction SilentlyContinue | Select-Object TotalItemSize, DatabaseName, ServerName, DatabaseProhibitSendQuota
+            # } catch {
+            #     $userMailboxStats.TotalItemSize = $null
+            #     $userMailboxStats.DatabaseName = $null
+            #     $userMailboxStats.ServerName = $null
+            # }
 
             New-Object -TypeName PSObject -Property @{
                 Code = 0
@@ -121,6 +121,6 @@ try {
 catch {
     $infoUser = $messageError
 }
-Remove-PSSession -Session $session
+# Remove-PSSession -Session $session
 
 return ,$infoUser | ConvertTo-Json

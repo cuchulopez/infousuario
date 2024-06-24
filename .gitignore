@@ -3,7 +3,7 @@
 /backend/daemon/
 /backend/logs
 /backend/.env
-
+/backend/package-lock.json
 /frontend/node_modules
 /frontend/.env
 
